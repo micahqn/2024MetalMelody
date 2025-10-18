@@ -1,111 +1,184 @@
-from phoenix6.configs import Slot0Configs
-from phoenix6.configs.talon_fx_configs import *
+from phoenix6.configs.config_groups import Slot0Configs
+from phoenix6.signals import GravityTypeValue
 from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
-from wpilib import RobotBase
+
 
 class Constants:
 
+    FIELD_LAYOUT = AprilTagFieldLayout.loadField(AprilTagField.k2025ReefscapeWelded)
+
     class CanIDs:
+        LEFT_ELEVATOR_TALON = 10
+        RIGHT_ELEVATOR_TALON = 11
+        INTAKE_TALON = 12
+        LEFT_PIVOT_TALON = 13
+        RIGHT_PIVOT_TALON = 14
+        FUNNEL_TALON = 22
 
-        k_left_front_drive = 1
-        k_left_rear_drive = 2
-        k_right_front_drive = 3
-        k_right_rear_drive = 4
-            
-        k_left_front_direction = 5
-        k_left_rear_direction = 6
-        k_right_front_direction = 7
-        k_right_rear_direction = 8
-            
-        k_left_front_encoder = 5
-        k_left_rear_encoder = 6
-        k_right_front_encoder = 7
-        k_right_rear_encoder = 8
+        ELEVATOR_CANDI = 20
+        PIVOT_CANCODER = 21
 
-        k_pigeon = 9
-        
-        k_pivot_motor = 9
-        k_intake_motor = 10
-        
-        k_lift_right = 11
-        k_lift_left = 12
+        INTAKE_CANRANGE = 23
+
+    class ClimberConstants:
+        GEAR_RATIO = 61504/189
+        GAINS = (Slot0Configs()
+            .with_k_p(1.0)
+            .with_k_i(0.0)
+            .with_k_d(0.0)
+            .with_k_s(0.0)
+            .with_k_v(0.0)
+            .with_k_a(0.0)
+        )
+
+        VOLTAGE_INWARDS = 16
+        VOLTAGE_OUTWARDS = -4
+
+        SERVO_PORT = 0
+        SERVO_ENGAGED_ANGLE = 0
+        SERVO_DISENGAGED_ANGLE = 90
+
+    class ElevatorConstants:
+        L1_SCORE_POSITION = 2.208
+        L2_SCORE_POSITION = 1.841
+        L3_SCORE_POSITION = 3.576
+        L4_SCORE_POSITION = 6.087158
+        L2_ALGAE_POSITION = 3.198
+        L3_ALGAE_POSITION = 5
+        NET_SCORE_POSITION = 6.052246
+        PROCESSOR_SCORE_POSITION = 0.8205
+        ELEVATOR_MAX = 6.096924
+
+        DEFAULT_POSITION = 0
+
+        CRUISE_VELOCITY = 9.5
+        MM_JERK = 6000
+        MM_UPWARD_ACCELERATION = 65
+        MM_BRAKE_ACCELERATION = 24
+        MM_DOWNWARD_ACCELERATION = 12
+        EXPO_K_V = 10
+        EXPO_K_A = 4
+
+        GEAR_RATIO = 31/4
+        GAINS = (Slot0Configs()
+            .with_k_g(0.36)
+            .with_k_p(40)
+            .with_k_i(0.0)
+            .with_k_d(0.0)
+            .with_k_s(0.11)
+            .with_k_v(0.0)
+            .with_k_a(0.0)
+            .with_gravity_type(GravityTypeValue.ELEVATOR_STATIC)
+        )
+
+        SETPOINT_TOLERANCE = 0.1
+
+    class PivotConstants:
+        INSIDE_ELEVATOR_ANGLE = 0.2 # Used for subsystem collision checking
+        ELEVATOR_PRIORITY_ANGLE = 0.123535 # We move the pivot to this position until the elevator has reached its setpoint.
+        STOW_ANGLE = 0.188
+        GROUND_INTAKE_ANGLE = -0.081543 -1
+        FUNNEL_INTAKE_ANGLE = 0.286 -1
+        ALGAE_INTAKE_ANGLE = -0.05 -1 
+        HIGH_SCORING_ANGLE =  0.21 -1
+        MID_SCORING_ANGLE = 0.22 -1
+        LOW_SCORING_ANGLE = -0.081543 -1
+        NET_SCORING_ANGLE = 0.131 -1
+        PROCESSOR_SCORING_ANGLE = 0. -1
+        CLIMBER_PRIORITY_ANGLE = 0.201943 -1
+
+        MINIMUM_ANGLE = -0.091 -1
+        MAXIMUM_ANGLE = 0.392822 -1
+
+        CRUISE_VELOCITY = 3
+        MM_ACCELERATION = 3
+
+        GEAR_RATIO = 961/36
+        GAINS = (Slot0Configs()
+                 .with_k_g(0.27)
+                 .with_k_p(30)
+                 .with_k_i(0.0)
+                 .with_k_d(0.6343)
+                 .with_k_s(0.19)
+                 .with_k_v(0)
+                 .with_k_a(0)
+                 .with_gravity_type(GravityTypeValue.ARM_COSINE)
+        )
+
+        CANCODER_DISCONTINUITY = 0.5
+        CANCODER_OFFSET = -0.434326171875
+
+        SETPOINT_TOLERANCE = 0.03125
 
     class IntakeConstants:
 
-        k_gear_ratio = 5
-        k_intake_speed = 1
+        CORAL_INTAKE_SPEED = 0.4*1.2*1.1
+        FUNNEL_INTAKE_SPEED = 0.8*0.75
+        CORAL_OUTPUT_SPEED = 0.6
+        L1_OUTPUT_SPEED = -0.4
 
-    class PivotConstants:
+        ALGAE_HOLD = 0.125
+        ALGAE_INTAKE_SPEED = 0.75
+        ALGAE_OUTPUT_SPEED = -1
 
-        k_gains = Slot0Configs() \
-        .with_k_p(10).with_k_i(0).with_k_d(0.2) \
-        .with_k_s(0.2).with_k_v(0.12).with_k_a(0)
+        SUPPLY_CURRENT = 35
 
-        k_acceleration = 4
-        k_cruise_velocity = 0.5
-        k_jerk = 20
+        GEAR_RATIO = 4
+        GAINS = (Slot0Configs()
+            .with_k_p(1.0)
+            .with_k_i(0.0)
+            .with_k_d(0.0)
+            .with_k_s(0.0)
+            .with_k_v(0.0)
+            .with_k_a(0.0)
+        )
 
-        k_stow_pos = 0
-        k_intake_pos = 0.361
-        k_score_down_pos = 0.268
-        k_score_up_pos = 0.107 #For scoring up into the amp (yell at Kaylee not me ;-;) 
+    class VisionConstants:
+        FRONT_LEFT = "limelight-fl"
+        FRONT_RIGHT = "limelight-fr"
+        FRONT_CENTER = "limelight-front"
+        BACK_CENTER = "limelight-back"
 
-        k_gear_ratio = 50
-        k_supply_current = 5
+    class FunnelConstants:
 
-    class LiftConstants:
+        CORAL_STATION_POSITION = 0.105
+        STOWED_POSITION = 0
 
-        k_gains = Slot0Configs() \
-        .with_k_p(1).with_k_i(0.1).with_k_d(0) \
-        .with_k_s(0).with_k_v(0).with_k_a(0)
+        GEAR_RATIO = 192/7
 
-        k_acceleration = 75
-        k_cruise_velocity = 100
+        CRUISE_VELOCITY = 1 
 
-        k_supply_current = 25
+        SETPOINT_TOLERANCE = 0.01
 
-        k_top_pos = 78.635 # lol big number
-        k_score_pos = 22.254
-        k_bottom_pos = 0
+        MM_ACCELERATION = 3.5
 
-        k_gear_ratio = 12
+        GAINS = (Slot0Configs()
+            .with_k_p(45)
+            .with_k_i(0.0)
+            .with_k_d(0.0)
+            .with_k_s(0.0)
+            .with_k_v(0.0)
+            .with_k_a(0.0)
+            .with_k_g(0.25)
+            .with_gravity_type(GravityTypeValue.ARM_COSINE)
+        )
 
-    class LedConstants:
-
-        k_led_pwm_port = 9 
-        k_led_length = 114
-
-    k_apriltag_layout = AprilTagFieldLayout.loadField(AprilTagField.k2024Crescendo)
+        SUPPLY_CURRENT = 20
+        STATOR_CURRENT = 50
     
-    class Swivel:
-        MM_ACCELERATION = 0
-        MM_CRUISE_VEL = 0
-        TRANSFERPOS = 0
-        K_P = 0
-        K_I = 0
-        K_D = 0
-        K_V = 0
-        K_S = 0
-        GEAR_RATIO = 1
-        SUPPLY_LIMIT = 0
-        MAX_ANGLE = 80.0
+    class AutoAlignConstants:
 
-    class LimeLight:
+        MAX_DISTANCE = 3.6343
         
-        k_enable_vision_odometry = RobotBase.isReal() # False if there's no Limelight on the robot.
+        TRANSLATION_P = 12
+        TRANSLATION_I = 0
+        TRANSLATION_D = 0.1
         
-        k_limelight_name = "limelight" # "limelight" by default. Name of the limelight to use for vision.
-
-        k_use_mega_tag_2 = False # If False, uses MegaTag 1.
+        HEADING_P = 2
+        HEADING_I = 0
+        HEADING_D = 0.2
         
-        k_standard_deviations = [0.3, 0.3, 999999] # (x, y, radians) Basically how confident we are with our vision, lower = more confident. Angle is set really high because we have a gyro.
+        HEADING_TOLERANCE = 2
 
-        k_auto_align_kp = 0.04
-
-        k_mount_angle = 0.0  # degrees for the angle that the limelight is mounted from the floor
-        k_mount_height = 23.25 # distance from the center of the limelight lens to the floor in inches
-        k_target_height = 82.5 # height of the speaker in inches
-        k_tag_height = 51.9 # height of april tag in inches
-
-        REDSPEAKERID = 4
-        BLUESPEAKERID = 7
+        VELOCITY_DEADBAND = 0.1
+        ROTATIONAL_DEADBAND = 0.02
