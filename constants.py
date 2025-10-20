@@ -138,33 +138,6 @@ class Constants:
         FRONT_RIGHT = "limelight-fr"
         FRONT_CENTER = "limelight-front"
         BACK_CENTER = "limelight-back"
-
-    class FunnelConstants:
-
-        CORAL_STATION_POSITION = 0.105
-        STOWED_POSITION = 0
-
-        GEAR_RATIO = 192/7
-
-        CRUISE_VELOCITY = 1 
-
-        SETPOINT_TOLERANCE = 0.01
-
-        MM_ACCELERATION = 3.5
-
-        GAINS = (Slot0Configs()
-            .with_k_p(45)
-            .with_k_i(0.0)
-            .with_k_d(0.0)
-            .with_k_s(0.0)
-            .with_k_v(0.0)
-            .with_k_a(0.0)
-            .with_k_g(0.25)
-            .with_gravity_type(GravityTypeValue.ARM_COSINE)
-        )
-
-        SUPPLY_CURRENT = 20
-        STATOR_CURRENT = 50
     
     class AutoAlignConstants:
 
