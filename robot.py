@@ -1,79 +1,99 @@
-#!/usr/bin/env python3
-#
-# Copyright (c) FIRST and other WPILib contributors.
-# Open Source Software; you can modify and/or share it under the terms of
-# the WPILib BSD license file in the root directory of this project.
-#
+import os.path
 
-import wpilib
-import commands2
-import typing
+from commands2 import CommandScheduler, TimedCommandRobot
+from ntcore import NetworkTableInstance
+from phoenix6 import SignalLogger
+from wpilib import DataLogManager, DriverStation, Timer, CameraServer
+from wpinet import WebServer, PortForwarder
 
-from robotcontainer import RobotContainer
+from constants import Constants
+from lib import elasticlib
+from lib.elasticlib import Notification, NotificationLevel
+from robot_container import RobotContainer
 
 
+class MetalMelody(TimedCommandRobot):
 
-class MetalMelody(commands2.TimedCommandRobot):
-    """
-    Command v2 robots are encouraged to inherit from TimedCommandRobot, which
-    has an implementation of robotPeriodic which runs the scheduler for you
-    """
-
-    autonomousCommand: typing.Optional[commands2.Command] = None
-
-    def __init__(self, period = wpilib.TimedRobot.kDefaultPeriod / 1000):
+    def __init__(self, period = 0.02) -> None:
         super().__init__(period)
 
-        # Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-        # autonomous chooser on the dashboard.
+        DriverStation.silenceJoystickConnectionWarning(not DriverStation.isFMSAttached())
         self.container = RobotContainer()
 
-        wpilib.DriverStation.silenceJoystickConnectionWarning(not wpilib.DriverStation.isFMSAttached())
+        SignalLogger.enable_auto_logging(DriverStation.isFMSAttached())
+        DataLogManager.start(period=0.2)
+        DriverStation.startDataLog(DataLogManager.getLog())
+
+        CameraServer.launch()
+
+        WebServer.getInstance().start(5800, self.get_deploy_directory())
+        port_forwarder = PortForwarder.getInstance()
+        for i in range(10): # Forward limelight ports for use when tethered at events.
+            port_forwarder.add(5800 + i, f"{Constants.VisionConstants.FRONT_CENTER}.local", 5800 + i)
+            port_forwarder.add(5800 + i + 10, f"{Constants.VisionConstants.BACK_CENTER}.local", 5800 + i)
+
+        DataLogManager.log("Robot initialized")
+
+        dashboard_nt = NetworkTableInstance.getDefault().getTable("Elastic")
+        self._match_time_pub = dashboard_nt.getFloatTopic("Match Time").publish()
+
+    @staticmethod
+    def get_deploy_directory():
+        if os.path.exists("/home/lvuser"):
+            return "/home/lvuser/py/deploy"
+        else:
+            return os.path.join(os.getcwd(), "deploy")
 
     def robotPeriodic(self) -> None:
-        """This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
-        that you want ran during disabled, autonomous, teleoperated and test.
+        self._match_time_pub.set(Timer.getMatchTime())
 
-        This runs after the mode specific periodic functions, but before LiveWindow and
-        SmartDashboard integrated updating."""
-
-        # Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
-        # commands, running already-scheduled commands, removing finished or interrupted commands,
-        # and running subsystem periodic() methods.  This must be called from the robot's periodic
-        # block in order for anything in the Command-based framework to work.
-        commands2.CommandScheduler.getInstance().run()
-
-    def disabledInit(self) -> None:
-        """This function is called once each time the robot enters Disabled mode."""
-        pass
-
-    def disabledPeriodic(self) -> None:
-        """This function is called periodically when disabled"""
+    def _simulationPeriodic(self) -> None:
         pass
 
     def autonomousInit(self) -> None:
-        """This autonomous runs the autonomous command selected by your RobotContainer class."""
-        self.autonomousCommand = self.container.getAutonomousCommand()
+        DataLogManager.log("Autonomous period started")
 
-        if self.autonomousCommand:
-            self.autonomousCommand.schedule()
+        selected_auto = self.container.get_autonomous_command()
+        if selected_auto is not None:
+            DataLogManager.log(f"Selected Auto: {selected_auto.getName()}")
+            selected_auto.schedule()
 
+        elasticlib.select_tab("Autonomous")
+            
     def autonomousPeriodic(self) -> None:
-        """This function is called periodically during autonomous"""
         pass
-
+    
+    def autonomousExit(self) -> None:
+        DataLogManager.log("Autonomous period ended")
+        elasticlib.select_tab("Teleop")
+            
     def teleopInit(self) -> None:
-        # This makes sure that the autonomous stops running when
-        # teleop starts running. If you want the autonomous to
-        # continue until interrupted by another command, remove
-        # this line or comment it out.
-        if self.autonomousCommand:
-            self.autonomousCommand.cancel()
+        DataLogManager.log("Teleoperated period started")
+
+    def teleopExit(self) -> None:
+        DataLogManager.log("Teleoperated period ended")
+        if DriverStation.isFMSAttached():
+            elasticlib.send_notification(
+                Notification(
+                    level=NotificationLevel.INFO.value,
+                    title="Good match!",
+                    description="(again)" if DriverStation.getReplayNumber() > 1 else ""
+                )
+            )
+
+    def testInit(self):
+        DataLogManager.log("Test period started")
+        CommandScheduler.getInstance().cancelAll()
+        elasticlib.select_tab("Debug")
+
+    def disabledInit(self):
+        SignalLogger.stop()
+
+    def testExit(self):
+        DataLogManager.log("Test period ended")
+    
+    def disabledPeriodic(self) -> None:
+        pass
 
     def teleopPeriodic(self) -> None:
-        """This function is called periodically during operator control"""
         pass
-
-    def testInit(self) -> None:
-        # Cancels all running commands at the start of test mode
-        commands2.CommandScheduler.getInstance().cancelAll()
