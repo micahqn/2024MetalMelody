@@ -13,30 +13,11 @@ class Constants:
         INTAKE_TALON = 12
         LEFT_PIVOT_TALON = 13
         RIGHT_PIVOT_TALON = 14
-        FUNNEL_TALON = 22
 
         ELEVATOR_CANDI = 20
         PIVOT_CANCODER = 21
 
         INTAKE_CANRANGE = 23
-
-    class ClimberConstants:
-        GEAR_RATIO = 61504/189
-        GAINS = (Slot0Configs()
-            .with_k_p(1.0)
-            .with_k_i(0.0)
-            .with_k_d(0.0)
-            .with_k_s(0.0)
-            .with_k_v(0.0)
-            .with_k_a(0.0)
-        )
-
-        VOLTAGE_INWARDS = 16
-        VOLTAGE_OUTWARDS = -4
-
-        SERVO_PORT = 0
-        SERVO_ENGAGED_ANGLE = 0
-        SERVO_DISENGAGED_ANGLE = 90
 
     class ElevatorConstants:
         L1_SCORE_POSITION = 2.208
@@ -56,8 +37,6 @@ class Constants:
         MM_UPWARD_ACCELERATION = 65
         MM_BRAKE_ACCELERATION = 24
         MM_DOWNWARD_ACCELERATION = 12
-        EXPO_K_V = 10
-        EXPO_K_A = 4
 
         GEAR_RATIO = 31/4
         GAINS = (Slot0Configs()
@@ -78,7 +57,6 @@ class Constants:
         ELEVATOR_PRIORITY_ANGLE = 0.123535 # We move the pivot to this position until the elevator has reached its setpoint.
         STOW_ANGLE = 0.188
         GROUND_INTAKE_ANGLE = -0.081543 -1
-        FUNNEL_INTAKE_ANGLE = 0.286 -1
         ALGAE_INTAKE_ANGLE = -0.05 -1 
         HIGH_SCORING_ANGLE =  0.21 -1
         MID_SCORING_ANGLE = 0.22 -1
@@ -113,7 +91,6 @@ class Constants:
     class IntakeConstants:
 
         CORAL_INTAKE_SPEED = 0.4*1.2*1.1
-        FUNNEL_INTAKE_SPEED = 0.8*0.75
         CORAL_OUTPUT_SPEED = 0.6
         L1_OUTPUT_SPEED = -0.4
 

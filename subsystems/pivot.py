@@ -29,7 +29,6 @@ class PivotSubsystem(StateSubsystem):
         AVOID_ELEVATOR = Constants.PivotConstants.ELEVATOR_PRIORITY_ANGLE
         STOW = Constants.PivotConstants.STOW_ANGLE
         GROUND_INTAKE = Constants.PivotConstants.GROUND_INTAKE_ANGLE
-        FUNNEL_INTAKE = Constants.PivotConstants.FUNNEL_INTAKE_ANGLE
         ALGAE_INTAKE = Constants.PivotConstants.ALGAE_INTAKE_ANGLE
         HIGH_SCORING = Constants.PivotConstants.HIGH_SCORING_ANGLE
         L3_CORAL = Constants.PivotConstants.MID_SCORING_ANGLE

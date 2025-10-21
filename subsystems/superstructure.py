@@ -20,7 +20,6 @@ class Superstructure(Subsystem):
 
     class Goal(Enum):
         DEFAULT = auto()
-        L4_CORAL = auto()
         L3_CORAL = auto()
         L2_CORAL = auto()
         L1_CORAL = auto()
@@ -56,8 +55,6 @@ class Superstructure(Subsystem):
         :type pivot: PivotSubsystem
         :param elevator: Elevator that moves the intake up and down
         :type elevator: ElevatorSubsystem
-        :param funnel: Pivot for funnel structure
-        :type funnel: FunnelSubsystem
         :param vision: Handles all vision estimates
         :type vision: VisionSubsystem
         """
@@ -102,7 +99,7 @@ class Superstructure(Subsystem):
     def _set_goal(self, goal: Goal) -> None:
         self._goal = goal
 
-        pivot_state, elevator_state, funnel_state, vision_state = self._goal_to_states.get(goal, (None, None, None, None))
+        pivot_state, elevator_state, vision_state = self._goal_to_states.get(goal, (None, None, None, None))
         safety_checks = self._should_enable_safety_checks(pivot_state)
         if pivot_state:
             self._desired_pivot_state = pivot_state
@@ -118,8 +115,6 @@ class Superstructure(Subsystem):
                 self.elevator.freeze()
             else:
                 self.elevator.set_desired_state(elevator_state)
-        if funnel_state:
-            self.funnel.set_desired_state(funnel_state)
         if vision_state:
             self.vision.set_desired_state(vision_state)
 
