@@ -53,7 +53,6 @@ class RobotContainer:
     def _pathplanner_setup(self):
         # Register NamedCommands
         NamedCommands.registerCommand("Default", self.superstructure.set_goal_command(Superstructure.Goal.DEFAULT))
-        NamedCommands.registerCommand("L4 Coral", self.superstructure.set_goal_command(Superstructure.Goal.L4_CORAL))
         NamedCommands.registerCommand("L3 Coral", self.superstructure.set_goal_command(Superstructure.Goal.L3_CORAL))
         NamedCommands.registerCommand("L2 Coral", self.superstructure.set_goal_command(Superstructure.Goal.L2_CORAL))
         NamedCommands.registerCommand("L1 Coral", self.superstructure.set_goal_command(Superstructure.Goal.L1_CORAL))
@@ -203,7 +202,6 @@ class RobotContainer:
         )
 
         goal_bindings = {
-            self._function_controller.y(): self.superstructure.Goal.L4_CORAL,
             self._function_controller.x(): self.superstructure.Goal.L3_CORAL,
             self._function_controller.b(): self.superstructure.Goal.L2_CORAL,
             self._function_controller.a(): self.superstructure.Goal.DEFAULT,
@@ -233,23 +231,6 @@ class RobotContainer:
                 self.intake.set_desired_state_command(self.intake.SubsystemState.HOLD),
             )
         )
-
-        """
-        self._function_controller.povLeft().onTrue(
-            cmd.parallel(
-                self.climber.set_desired_state_command(self.climber.SubsystemState.CLIMB_NEGATIVE),
-                self.superstructure.set_goal_command(self.superstructure.Goal.CLIMBING)
-            )
-
-        ).onFalse(self.climber.set_desired_state_command(self.climber.SubsystemState.STOP))
-
-        self._function_controller.povRight().onTrue(
-            cmd.parallel(
-                self.climber.set_desired_state_command(self.climber.SubsystemState.CLIMB_POSITIVE),
-                self.superstructure.set_goal_command(self.superstructure.Goal.CLIMBING)
-            )
-        ).onFalse(self.climber.set_desired_state_command(self.climber.SubsystemState.STOP))
-        """
 
         self._function_controller.rightBumper().whileTrue(
             self.intake.set_desired_state_command(self.intake.SubsystemState.CORAL_OUTPUT)

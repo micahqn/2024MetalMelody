@@ -48,6 +48,7 @@ class ElevatorSubsystem(StateSubsystem):
         general_config = TalonFXConfiguration()
         general_config.slot0 = Constants.ElevatorConstants.GAINS
         general_config.motor_output.with_neutral_mode(NeutralModeValue.BRAKE)
+        general_config.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
         self._master_motor.configurator.apply(general_config)
         
         self._master_motor.set_position(Constants.ElevatorConstants.DEFAULT_POSITION)
@@ -60,6 +61,8 @@ class ElevatorSubsystem(StateSubsystem):
             .with_differential_talon_fx_sensor_id(self._master_motor.device_id)
             .with_differential_remote_sensor_id(self._master_motor.device_id)
         )
+        follower_config.motor_output.inverted = InvertedValue.COUNTER_CLOCKWISE_POSITIVE
+
         self.follower_motor.configurator.apply(follower_config)
         
         self.follower_motor.set_control(CoastOut())

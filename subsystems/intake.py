@@ -20,7 +20,6 @@ class IntakeSubsystem(StateSubsystem):
         HOLD = auto()
         ALGAE_HOLD = auto()
         CORAL_INTAKE = auto()
-        FUNNEL_INTAKE = auto()
         CORAL_OUTPUT = auto()
         ALGAE_INTAKE = auto()
         ALGAE_OUTPUT = auto()
@@ -43,7 +42,6 @@ class IntakeSubsystem(StateSubsystem):
         SubsystemState.HOLD: (0, False),
         SubsystemState.ALGAE_HOLD: (Constants.IntakeConstants.ALGAE_HOLD, True),
         SubsystemState.CORAL_INTAKE: (Constants.IntakeConstants.CORAL_INTAKE_SPEED, False),
-        SubsystemState.FUNNEL_INTAKE: (Constants.IntakeConstants.FUNNEL_INTAKE_SPEED, False),
         SubsystemState.CORAL_OUTPUT: (Constants.IntakeConstants.CORAL_OUTPUT_SPEED, True),
         SubsystemState.ALGAE_INTAKE: (Constants.IntakeConstants.ALGAE_INTAKE_SPEED, False),
         SubsystemState.ALGAE_OUTPUT: (Constants.IntakeConstants.ALGAE_OUTPUT_SPEED, True),
